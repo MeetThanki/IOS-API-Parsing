@@ -23,19 +23,13 @@ class UserView: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     
     func callApi(){
-        // 1. create the url
         if let url = URL(string: "https://designtrident.com/Test/view_user.php"){
-            
-            // 2. create url session
             let session = URLSession(configuration: .default)
-            
-            // 3. give the session task
             let task = session.dataTask(with: url) { (data, response, error) in
                 if error != nil{
-                    print(error!)
+                    print(error?.localizedDescription as Any)
                     return
                 }
-                
                 if let jsonData = data{
                     let decoder = JSONDecoder()
                     do{
@@ -44,15 +38,11 @@ class UserView: UIViewController, UITableViewDelegate, UITableViewDataSource {
                         DispatchQueue.main.async {
                             self.tableView.reloadData()
                         }
-                        
                     }catch{
-                        print(error)
+                        print(error.localizedDescription)
                     }
-                    
                 }
             }
-            
-            //4. start the task
             task.resume()
         }
     }
