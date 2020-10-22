@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MBProgressHUD
 
 class ViewController: UIViewController {
     
@@ -22,8 +23,15 @@ class ViewController: UIViewController {
     @IBAction func addPressed(_ sender: Any) {
         callApi()
     }
+    func showProgress() {
+        let Indicator = MBProgressHUD.showAdded(to: self.view, animated: true)
+        Indicator.label.text = "Please Wait"
+        Indicator.isUserInteractionEnabled = false
+        Indicator.show(animated: true)
+    }
     
     func callApi(){
+        self.showProgress()
         // prepare parameters
         let parameters = "user_name=\(edtUsername.text!)&user_no=\(edtMobile.text!)"
         
@@ -50,8 +58,8 @@ class ViewController: UIViewController {
                     if let responseJSON = responseJSON as? [String:Any] {
                             if responseJSON["status"] as! Bool{
                                 DispatchQueue.main.async {
+                                    MBProgressHUD.hide(for: self.view, animated: true)
                                     let alert = UIAlertController(title: "Message", message: "User has added Succesful.", preferredStyle: .alert)
-
                                     alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
                                     self.present(alert, animated: true)
                                     self.viewDidLoad()
@@ -59,6 +67,7 @@ class ViewController: UIViewController {
                             }
                             else{
                                 DispatchQueue.main.async {
+                                    MBProgressHUD.hide(for: self.view, animated: true)
                                     let alert = UIAlertController(title: "Message", message: responseJSON["message"] as? String, preferredStyle: .alert)
 
                                     alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))

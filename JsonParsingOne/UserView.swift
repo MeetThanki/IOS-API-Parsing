@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import MBProgressHUD
 class UserView: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView : UITableView!
@@ -21,8 +21,14 @@ class UserView: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.tableFooterView = UIView()
         
     }
-    
+    func showProgress() {
+        let Indicator = MBProgressHUD.showAdded(to: self.view, animated: true)
+        Indicator.label.text = "Please Wait"
+        Indicator.isUserInteractionEnabled = false
+        Indicator.show(animated: true)
+    }
     func callApi(){
+        showProgress()
         if let url = URL(string: "https://designtrident.com/Test/view_user.php"){
             let session = URLSession(configuration: .default)
             let task = session.dataTask(with: url) { (data, response, error) in
@@ -36,6 +42,7 @@ class UserView: UIViewController, UITableViewDelegate, UITableViewDataSource {
                         self.myUserModel = try decoder.decode(UserModel.self, from: jsonData)
                         self.myUserList = self.myUserModel.users_list
                         DispatchQueue.main.async {
+                            MBProgressHUD.hide(for: self.view,animated: true)
                             self.tableView.reloadData()
                         }
                     }catch{
@@ -48,7 +55,7 @@ class UserView: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     
     func deleteUser(user_id : String){
-        
+        showProgress()
         let parameters = "user_id=\(user_id)"
         
         if let url = URL(string: "https://designtrident.com/Test/delete_user.php"){
@@ -69,7 +76,10 @@ class UserView: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     let responseJSON = try? JSONSerialization.jsonObject(with: jsonData, options: [])
                     if let response = responseJSON as? [String:Any] {
                         if (response["status"] as? Bool)! {
-                            self.callApi()
+                            DispatchQueue.main.async {
+                                MBProgressHUD.hide(for: self.view, animated: true)
+                                self.callApi()
+                            }
                         }
                     }
                 }
