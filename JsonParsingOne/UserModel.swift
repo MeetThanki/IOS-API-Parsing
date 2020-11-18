@@ -15,6 +15,5 @@ struct UserModel: Decodable {
 }
 
 struct UsersList: Decodable {
-    let user_id, user_name, user_mobile, user_status: String
-    let created_date: String
+    let user_id, user_name, user_mobile, user_status,created_date: String
 }
